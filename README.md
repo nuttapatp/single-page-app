@@ -1,36 +1,138 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📷 Photo Gallery SPA
 
-## Getting Started
+A high-performance Single-Page Application (SPA) photo gallery built with **Next.js 15** and **TypeScript**, deployed on **Google Cloud Platform**.
 
-First, run the development server:
+> Developed as a Full-Stack Developer job test submission for **Diversition Digital Solutions**.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+**Live Demo:** https://gallery-app-295418808209.asia-southeast1.run.app/
+
+---
+
+## ✨ Features
+
+- **Masonry Grid Layout** — Pinterest-style responsive photo grid (2–5 columns)
+- **Infinite Scroll** — Smooth loading via Intersection Observer API (12 images/page)
+- **Hashtag Filtering** — Real-time filtering synced with URL query parameters (`?tag=...`)
+- **Category Dropdown** — Quick tag selection with branded styling
+- **Skeleton Loaders** — Premium perceived-performance loading experience
+- **Back to Top Button** — Smooth scroll button that appears after 1000px
+- **Dynamic Page Titles** — Browser tab updates on tag selection
+
+---
+
+## 🏗️ Architecture & Tech Stack
+
+### Frontend / BFF
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 15 (App Router) |
+| Language | TypeScript |
+| Styling | Vanilla CSS + CSS Modules |
+| API Layer | Next.js Route Handlers (BFF Pattern) |
+
+### Cloud Infrastructure (GCP)
+
+```
+Developer Machine
+      │
+      │  git push
+      ▼
+GitHub Repository
+      │
+      │  Trigger
+      ▼
+Cloud Build (CI/CD)
+      │
+      │  docker build + push
+      ▼
+Artifact Registry
+(Docker Image Store)
+      │
+      │  Deploy new revision
+      ▼
+Google Cloud Run (Serverless)
+  [Next.js App Container]
+      │
+      ├──────────────────────┐
+      ▼                      ▼
+User Browser         External Image API
+(HTTPS)              (placehold.co)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| GCP Service | Role |
+|---|---|
+| **Cloud Run** | Serverless compute hosting the Next.js container |
+| **Artifact Registry** | Docker image storage |
+| **Cloud Build** | CI/CD pipeline — build and push on demand |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+> See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for full production specs including server specifications, OS/runtime, cost estimation, and scalability path.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 📁 Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+single-page-app/
+├── app/
+│   ├── api/images/     # Route Handler (BFF API)
+│   ├── globals.css     # Global design tokens
+│   ├── layout.tsx      # Root layout with SEO metadata
+│   └── page.tsx        # Home page
+├── components/
+│   ├── Gallery.tsx             # Main gallery with infinite scroll
+│   ├── Gallery.module.css      # Gallery component styles
+│   ├── ImageCard.tsx           # Individual image card (Pinterest hover)
+│   └── ImageCard.module.css    # ImageCard component styles
+├── constants/
+│   └── gallery.ts      # Centralized constants (TAGS, PAGE_LIMIT)
+├── hooks/
+│   └── useInfiniteScroll.ts    # Custom Intersection Observer hook
+├── lib/
+│   ├── mock-data.ts    # Mock database generator
+│   └── utils.ts        # Utility functions
+├── types/
+│   └── gallery.ts      # Shared TypeScript interfaces
+├── Dockerfile          # Multi-stage optimized Docker build
+├── ARCHITECTURE.md     # Full system architecture documentation
+└── DEPLOYMENT.md       # Step-by-step GCP deployment guide
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🚀 Getting Started (Local Development)
 
-## Deploy on Vercel
+```bash
+# Install dependencies
+npm install
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Run the development server
+npm run dev
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+---
+
+## ☁️ Deployment (Google Cloud Run)
+
+See the full step-by-step guide in [`DEPLOYMENT.md`](./DEPLOYMENT.md).
+
+```bash
+# Build Docker image via Cloud Build
+gcloud builds submit --tag asia-southeast1-docker.pkg.dev/single-page-app-494714/gallery-repo/gallery-app .
+
+# Deploy to Cloud Run
+gcloud run deploy gallery-app \
+    --image asia-southeast1-docker.pkg.dev/single-page-app-494714/gallery-repo/gallery-app \
+    --platform managed \
+    --region asia-southeast1 \
+    --allow-unauthenticated \
+    --port 3000
+```
+
+---
+
+## 👤 Author
+
+**Nuttapat Pothavichai**  
+Full-Stack Developer Applicant @ Diversition Digital Solutions
